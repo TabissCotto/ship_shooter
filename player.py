@@ -14,7 +14,7 @@ class Player(pygame.sprite.Sprite):
         self.speed = PLAYER_SPEED
 
         self.can_shoot = True
-        self.shoot_cooldown = 0.2  
+        self.shoot_cooldown = 0.22 
         self.cooldown_timer = 0.0
 
     def get_input(self):
