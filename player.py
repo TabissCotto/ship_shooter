@@ -13,9 +13,12 @@ class Player(pygame.sprite.Sprite):
         self.pos_y = float(self.rect.y)
         self.speed = PLAYER_SPEED
 
+        self.can_shoot = True
+        self.shoot_cooldown = 0.2  
+        self.cooldown_timer = 0.0
+
     def get_input(self):
         keys = pygame.key.get_pressed()
-
         direction = pygame.math.Vector2(0, 0)
 
         if keys[pygame.K_LEFT] or keys[pygame.K_a]:
@@ -30,19 +33,33 @@ class Player(pygame.sprite.Sprite):
         if direction.magnitude() > 0:
             direction = direction.normalize()
 
-        return direction
+        wants_to_shoot = keys[pygame.K_SPACE]
+
+        return direction, wants_to_shoot
+
+    def update_cooldown(self, dt):
+        if not self.can_shoot:
+            self.cooldown_timer += dt
+            if self.cooldown_timer >= self.shoot_cooldown:
+                self.can_shoot = True
+                self.cooldown_timer = 0.0
 
     def update(self, dt):
-        direction = self.get_input()
+        direction, wants_to_shoot = self.get_input()
 
-        # direction.x e direction.y ora sono già normalizzati!
         self.pos_x += direction.x * self.speed * dt
         self.pos_y += direction.y * self.speed * dt
-
         self.rect.x = int(self.pos_x)
         self.rect.y = int(self.pos_y)
-
         self.clamp_position()
+
+        self.update_cooldown(dt)
+
+        shot_fired = wants_to_shoot and self.can_shoot
+        if shot_fired:
+            self.can_shoot = False
+
+        return shot_fired
 
     def clamp_position(self):
         if self.rect.left < 0:
