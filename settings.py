@@ -13,10 +13,12 @@ COLOR_BG = (15, 15, 25)
 TOGGLE_FULLSCREEN_KEY = pygame.K_F11
 
 #-----------------------------------------------------PLAYER
-
 PLAYER_SPEED = 500.0  
 PLAYER_SIZE = (50, 40) 
 COLOR_PLAYER = (50, 200, 255) 
+PLAYER_ACCEL_DELAY = 0.20
+PLAYER_ACCEL_INTERVAL = 0.075
+PLAYER_ACCEL_FACTOR = 0.05  
 
 #-----------------------------------------------------PROJECTILE
 
