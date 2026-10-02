@@ -1,16 +1,16 @@
 import pygame
-from settings import LASER_SPEED, LASER_SIZE, COLOR_LASER
+import settings as stn
 
 class Laser(pygame.sprite.Sprite):
     def __init__(self, pos):
         super().__init__()
 
-        self.image = pygame.Surface(LASER_SIZE)
-        self.image.fill(COLOR_LASER)
+        self.image = pygame.Surface(stn.LASER_SIZE)
+        self.image.fill(stn.COLOR_LASER)
         self.rect = self.image.get_rect(center=pos)
 
         self.pos_y = float(self.rect.y)
-        self.speed = LASER_SPEED
+        self.speed = stn.LASER_SPEED
 
     def update(self, dt):
         self.pos_y -= self.speed * dt

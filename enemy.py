@@ -1,16 +1,16 @@
 import pygame
-from settings import ENEMY_SPEED, ENEMY_SIZE, COLOR_ENEMY
+import settings as stn
 
 class Enemy(pygame.sprite.Sprite):
     def __init__(self, pos):
         super().__init__()
 
-        self.image = pygame.Surface(ENEMY_SIZE)
-        self.image.fill(COLOR_ENEMY)
+        self.image = pygame.Surface(stn.ENEMY_SIZE)
+        self.image.fill(stn.COLOR_ENEMY)
         self.rect = self.image.get_rect(center=pos)
 
         self.pos_y = float(self.rect.y)
-        self.speed = ENEMY_SPEED
+        self.speed = stn.ENEMY_SPEED
 
     def update(self, dt):
         self.pos_y += self.speed * dt

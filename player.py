@@ -1,17 +1,17 @@
 import pygame
-from settings import PLAYER_SPEED, PLAYER_SIZE, COLOR_PLAYER, PLAYER_ACCEL_DELAY, PLAYER_ACCEL_INTERVAL, PLAYER_ACCEL_FACTOR
+import settings as stn
 
 class Player(pygame.sprite.Sprite):
     def __init__(self, pos):
         super().__init__()
 
-        self.image = pygame.Surface(PLAYER_SIZE)
-        self.image.fill(COLOR_PLAYER)
+        self.image = pygame.Surface(stn.PLAYER_SIZE)
+        self.image.fill(stn.COLOR_PLAYER)
         self.rect = self.image.get_rect(center=pos)
 
         self.pos_x = float(self.rect.x)
         self.pos_y = float(self.rect.y)
-        self.speed = PLAYER_SPEED
+        self.speed = stn.PLAYER_SPEED
 
         self.can_shoot = True
         self.shoot_cooldown = 0.22 
@@ -52,7 +52,7 @@ class Player(pygame.sprite.Sprite):
         self.update_acceleration(direction.x != 0, dt)
 
         screen_width = pygame.display.get_surface().get_width()
-        speed_bonus = self.accel_ticks * (screen_width * PLAYER_ACCEL_FACTOR)
+        speed_bonus = self.accel_ticks * (screen_width * stn.PLAYER_ACCEL_FACTOR)
         current_speed_x = self.speed + speed_bonus
 
         self.pos_x += direction.x * current_speed_x * dt
@@ -72,9 +72,9 @@ class Player(pygame.sprite.Sprite):
     def update_acceleration(self, is_moving_x, dt):
         if is_moving_x:
             self.move_timer += dt
-            if self.move_timer >= PLAYER_ACCEL_DELAY:
-                time_after_delay = self.move_timer - PLAYER_ACCEL_DELAY
-                self.accel_ticks = int(time_after_delay // PLAYER_ACCEL_INTERVAL) + 1
+            if self.move_timer >= stn.PLAYER_ACCEL_DELAY:
+                time_after_delay = self.move_timer - stn.PLAYER_ACCEL_DELAY
+                self.accel_ticks = int(time_after_delay // stn.PLAYER_ACCEL_INTERVAL) + 1
         else:
             self.move_timer = 0.0
             self.accel_ticks = 0

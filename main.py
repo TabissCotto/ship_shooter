@@ -2,7 +2,7 @@
 import sys
 import random
 import pygame
-from settings import SCREEN_WIDTH, SCREEN_HEIGHT, CAPTION, FPS, COLOR_BG, ENEMY_SPAWN_RATE
+import settings as stn
 from player import Player
 from projectile import Laser
 from enemy import Enemy
@@ -12,10 +12,10 @@ class Game:
         pygame.init()
 
         self.screen = pygame.display.set_mode(
-            (SCREEN_WIDTH, SCREEN_HEIGHT),
+            (stn.SCREEN_WIDTH, stn.SCREEN_HEIGHT),
             pygame.RESIZABLE
         )
-        pygame.display.set_caption(CAPTION)
+        pygame.display.set_caption(stn.CAPTION)
         
         self.clock = pygame.time.Clock()
         self.is_running = True
@@ -31,7 +31,7 @@ class Game:
 
         # Custom Event for Enemy Spawning
         self.SPAWN_ENEMY = pygame.USEREVENT + 1
-        pygame.time.set_timer(self.SPAWN_ENEMY, ENEMY_SPAWN_RATE)
+        pygame.time.set_timer(self.SPAWN_ENEMY, stn.ENEMY_SPAWN_RATE)
 
     def handle_events(self):
         for event in pygame.event.get():
@@ -72,7 +72,7 @@ class Game:
         self.check_collisions()
 
     def draw(self):
-        self.screen.fill(COLOR_BG)
+        self.screen.fill(stn.COLOR_BG)
 
         self.player_group.draw(self.screen)
         self.laser_group.draw(self.screen)
@@ -82,7 +82,7 @@ class Game:
 
     def run(self):
         while self.is_running:
-            dt = self.clock.tick(FPS) / 1000.0
+            dt = self.clock.tick(stn.FPS) / 1000.0
             self.handle_events()
             self.update(dt)
             self.draw()
