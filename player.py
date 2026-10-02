@@ -1,5 +1,5 @@
 import pygame
-from settings import SCREEN_WIDTH, SCREEN_HEIGHT, PLAYER_SPEED, PLAYER_SIZE, COLOR_PLAYER
+from settings import PLAYER_SPEED, PLAYER_SIZE, COLOR_PLAYER
 
 class Player(pygame.sprite.Sprite):
     def __init__(self, pos):
@@ -62,16 +62,19 @@ class Player(pygame.sprite.Sprite):
         return shot_fired
 
     def clamp_position(self):
+        screen = pygame.display.get_surface()
+        screen_width, screen_height = screen.get_size()
+
         if self.rect.left < 0:
             self.rect.left = 0
             self.pos_x = float(self.rect.x)
-        elif self.rect.right > SCREEN_WIDTH:
-            self.rect.right = SCREEN_WIDTH
+        elif self.rect.right > screen_width:
+            self.rect.right = screen_width
             self.pos_x = float(self.rect.x)
 
         if self.rect.top < 0:
             self.rect.top = 0
             self.pos_y = float(self.rect.y)
-        elif self.rect.bottom > SCREEN_HEIGHT:
-            self.rect.bottom = SCREEN_HEIGHT
+        elif self.rect.bottom > screen_height:
+            self.rect.bottom = screen_height
             self.pos_y = float(self.rect.y)

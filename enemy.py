@@ -1,5 +1,5 @@
 import pygame
-from settings import SCREEN_HEIGHT, ENEMY_SPEED, ENEMY_SIZE, COLOR_ENEMY
+from settings import ENEMY_SPEED, ENEMY_SIZE, COLOR_ENEMY
 
 class Enemy(pygame.sprite.Sprite):
     def __init__(self, pos):
@@ -16,5 +16,6 @@ class Enemy(pygame.sprite.Sprite):
         self.pos_y += self.speed * dt
         self.rect.y = int(self.pos_y)
 
-        if self.rect.top > SCREEN_HEIGHT:
+        screen = pygame.display.get_surface()
+        if self.rect.top > screen.get_height():
             self.kill()

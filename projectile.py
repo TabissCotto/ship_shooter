@@ -1,5 +1,5 @@
 import pygame
-from settings import SCREEN_HEIGHT, LASER_SPEED, LASER_SIZE, COLOR_LASER
+from settings import LASER_SPEED, LASER_SIZE, COLOR_LASER
 
 class Laser(pygame.sprite.Sprite):
     def __init__(self, pos):

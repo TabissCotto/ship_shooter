@@ -1,3 +1,6 @@
+import pygame
+
+
 SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 600
 
@@ -6,6 +9,8 @@ CAPTION = "Arcade Ship Shooter"
 FPS = 60
 
 COLOR_BG = (15, 15, 25)  
+
+TOGGLE_FULLSCREEN_KEY = pygame.K_F11
 
 #-----------------------------------------------------PLAYER
 
