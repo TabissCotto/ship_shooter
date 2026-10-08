@@ -19,6 +19,9 @@ class Player(pygame.sprite.Sprite):
         self.move_timer = 0.0
         self.accel_ticks = 0
 
+        self.max_health = stn.PLAYER_MAX_HEALTH
+        self.health = self.max_health
+
     def get_input(self):
         keys = pygame.key.get_pressed()
         direction = pygame.math.Vector2(0, 0)
@@ -45,6 +48,10 @@ class Player(pygame.sprite.Sprite):
             if self.cooldown_timer >= self.shoot_cooldown:
                 self.can_shoot = True
                 self.cooldown_timer = 0.0
+
+    def take_damage(self, amount=1):
+        self.health = max(0, self.health - amount)
+        return self.health <= 0   # True if dead
 
     def update(self, dt):
         direction, wants_to_shoot = self.get_input()
