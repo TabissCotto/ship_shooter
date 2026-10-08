@@ -2,11 +2,10 @@ import pygame
 import settings as stn
 
 class Enemy(pygame.sprite.Sprite):
-    def __init__(self, pos):
+    def __init__(self, pos, image_surface):
         super().__init__()
 
-        self.image = pygame.Surface(stn.ENEMY_SIZE)
-        self.image.fill(stn.COLOR_ENEMY)
+        self.image = image_surface
         self.rect = self.image.get_rect(center=pos)
 
         self.pos_y = float(self.rect.y)

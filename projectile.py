@@ -5,8 +5,8 @@ class Laser(pygame.sprite.Sprite):
     def __init__(self, pos):
         super().__init__()
 
-        self.image = pygame.Surface(stn.LASER_SIZE)
-        self.image.fill(stn.COLOR_LASER)
+        raw_image = pygame.image.load(stn.PATH_LASER_IMG).convert_alpha()
+        self.image = pygame.transform.scale(raw_image, stn.LASER_SIZE)
         self.rect = self.image.get_rect(center=pos)
 
         self.pos_y = float(self.rect.y)

@@ -5,8 +5,8 @@ class Player(pygame.sprite.Sprite):
     def __init__(self, pos):
         super().__init__()
 
-        self.image = pygame.Surface(stn.PLAYER_SIZE)
-        self.image.fill(stn.COLOR_PLAYER)
+        raw_image = pygame.image.load(stn.PATH_PLAYER_IMG).convert_alpha()
+        self.image = pygame.transform.scale(raw_image, stn.PLAYER_SIZE)
         self.rect = self.image.get_rect(center=pos)
 
         self.pos_x = float(self.rect.x)

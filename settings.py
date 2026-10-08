@@ -32,3 +32,16 @@ ENEMY_SPEED = 200.0
 ENEMY_SIZE = (40, 30)  
 COLOR_ENEMY = (255, 70, 70)  
 ENEMY_SPAWN_RATE = 1000  
+
+#-----------------------------------------------------ASSET PATHS
+
+PATH_PLAYER_IMG = "assets/player.png"
+PATH_LASER_IMG = "assets/laser.png"
+
+ENEMY_TEXTURES = [
+    "assets/enemy1.png",
+    "assets/enemy2.png",
+    "assets/enemy3.png",
+    "assets/enemy4.png",
+    "assets/enemy5.png",
+]

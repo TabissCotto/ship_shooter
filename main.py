@@ -20,6 +20,12 @@ class Game:
         self.clock = pygame.time.Clock()
         self.is_running = True
 
+        # Pre-load scaled enemy surfaces
+        self.enemy_textures = [
+            pygame.transform.scale(pygame.image.load(path).convert_alpha(), stn.ENEMY_SIZE)
+            for path in stn.ENEMY_TEXTURES
+        ]
+
         # Player setup
         start_pos = (self.screen.get_width() // 2, self.screen.get_height() - 60)
         self.player_sprite = Player(start_pos)
@@ -47,7 +53,8 @@ class Game:
             elif event.type == self.SPAWN_ENEMY:
                 random_x = random.randint(20, self.screen.get_width() - 20)
                 spawn_pos = (random_x, -20)
-                new_enemy = Enemy(spawn_pos)
+                random_surface = random.choice(self.enemy_textures)
+                new_enemy = Enemy(spawn_pos, random_surface)
                 self.enemy_group.add(new_enemy)
 
     def check_collisions(self):
