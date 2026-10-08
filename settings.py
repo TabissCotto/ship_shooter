@@ -57,13 +57,50 @@ COLOR_OVERLAY = (0, 0, 0, 160)
 
 #-----------------------------------------------------GAMEPLAY
 PLAYER_MAX_HEALTH = 3
-POINTS_PER_ENEMY = 1
 
 PAUSE_KEY = pygame.K_TAB
 RESTART_KEYS = (pygame.K_r, pygame.K_RETURN)
 
 #-----------------------------------------------------FONTS
-PATH_FONT = "assets/fonts/Debrosee-ALPnL.ttf"  
+PATH_FONT = "assets/fonts/Flottflott.ttf"  
 
 #-----------------------------------------------------BACKGROUND
 STAR_COUNT = 150
+
+#-----------------------------------------------------ENEMY BEHAVIOR
+
+# ZigZag
+ZIGZAG_FREQUENCY = 4.0
+ZIGZAG_AMPLITUDE = 80.0
+ZIGZAG_SPEED_MULT = 0.9
+
+# Fast
+FAST_SIZE_SCALE   = 0.8
+FAST_SPEED_MULT   = 1.75
+
+# Tank
+TANK_SIZE_SCALE   = 1.3
+TANK_SPEED_MULT   = 0.5
+TANK_MAX_HEALTH   = 4
+TANK_HIT_FLASH    = 0.10   # seconds of white flash per hit
+
+# Shooter
+SHOOTER_SPEED_MULT    = 0.8
+SHOOTER_MAX_HEALTH    = 2
+SHOOTER_TARGET_Y_FRAC = 0.22   # descends to 22% of screen height
+SHOOTER_HOVER_SPEED   = 120.0  # horizontal patrol speed
+SHOOTER_FIRE_COOLDOWN = 1.6    # seconds between shots
+SHOOTER_HIT_FLASH     = 0.10
+
+#-----------------------------------------------------ENEMY LASER
+ENEMY_LASER_SPEED = 420.0
+ENEMY_LASER_SIZE  = (24, 24)                 # square, so rotation looks right
+ENEMY_LASER_SPIN  = 720.0                    # degrees per second (2 full turns/sec)
+PATH_ENEMY_LASER_IMG = "assets/enemy_laser.png"   # <-- your shuriken
+
+# Points per enemy 
+POINTS_STANDARD = 100
+POINTS_ZIGZAG   = 150
+POINTS_FAST     = 200
+POINTS_TANK     = 400
+POINTS_SHOOTER  = 300

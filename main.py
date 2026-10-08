@@ -1,12 +1,21 @@
-# main.py
 import sys
 import random
 import pygame
 import settings as stn
 from player import Player
 from projectile import Laser
-from enemy import Enemy
+from enemy import (
+    StandardEnemy, ZigZagEnemy, FastEnemy, TankEnemy, ShooterEnemy,
+)
 from background import Starfield
+
+
+def load_scaled(path, scale):
+    """Module-level helper — no `self` needed."""
+    raw = pygame.image.load(path).convert_alpha()
+    w = int(stn.ENEMY_SIZE[0] * scale)
+    h = int(stn.ENEMY_SIZE[1] * scale)
+    return pygame.transform.scale(raw, (w, h))
 
 
 class Game:
@@ -22,24 +31,31 @@ class Game:
         self.clock = pygame.time.Clock()
         self.is_running = True
 
-        # Initialize Starfield
-        self.starfield = Starfield(self.screen.get_width(), self.screen.get_height(), stn.STAR_COUNT)
+        # Starfield
+        self.starfield = Starfield(
+            self.screen.get_width(),
+            self.screen.get_height(),
+            stn.STAR_COUNT,
+        )
 
         # Fonts
         self.font = pygame.font.Font(stn.PATH_FONT or None, stn.UI_FONT_SIZE)
         self.font_big = pygame.font.Font(stn.PATH_FONT or None, stn.UI_FONT_SIZE_BIG)
 
-        # Pre-load scaled enemy surfaces
-        self.enemy_textures = [
-            pygame.transform.scale(pygame.image.load(path).convert_alpha(), stn.ENEMY_SIZE)
-            for path in stn.ENEMY_TEXTURES
+        # --- Enemy registry (class, surface, spawn_weight) ---
+        self.enemy_defs = [
+            (StandardEnemy, load_scaled(stn.ENEMY_TEXTURES[0], 1.0),                   50),
+            (ZigZagEnemy,   load_scaled(stn.ENEMY_TEXTURES[1], 1.0),                   20),
+            (FastEnemy,     load_scaled(stn.ENEMY_TEXTURES[2], stn.FAST_SIZE_SCALE),   15),
+            (TankEnemy,     load_scaled(stn.ENEMY_TEXTURES[3], stn.TANK_SIZE_SCALE),    8),
+            (ShooterEnemy,  load_scaled(stn.ENEMY_TEXTURES[4], 1.0),                    7),
         ]
+        self._enemy_classes  = [d[0] for d in self.enemy_defs]
+        self._enemy_surfaces = [d[1] for d in self.enemy_defs]
+        self._enemy_weights  = [d[2] for d in self.enemy_defs]
 
-        # Custom Event for Enemy Spawning
+        # Custom event for spawning
         self.SPAWN_ENEMY = pygame.USEREVENT + 1
-
-        # Persistent across restarts
-        self.enemy_timer_active = False
 
         self.reset_game()
     # ------------------------------------------------------------------
@@ -52,6 +68,7 @@ class Game:
         self.player_group = pygame.sprite.GroupSingle(self.player_sprite)
 
         self.laser_group = pygame.sprite.Group()
+        self.enemy_laser_group = pygame.sprite.Group()
         self.enemy_group = pygame.sprite.Group()
 
         self.score = 0
@@ -85,34 +102,56 @@ class Game:
                     self.spawn_enemy()
 
     def spawn_enemy(self):
-        random_x = random.randint(20, self.screen.get_width() - 20)
-        spawn_pos = (random_x, -20)
-        random_surface = random.choice(self.enemy_textures)
-        self.enemy_group.add(Enemy(spawn_pos, random_surface))
+        cls, surf = random.choices(
+            list(zip(self._enemy_classes, self._enemy_surfaces)),
+            weights=self._enemy_weights,
+            k=1,
+        )[0]
+
+        # Leave some margin so big tanks don't clip off the edges at spawn
+        half_w = surf.get_width() // 2 + 5
+        random_x = random.randint(half_w, self.screen.get_width() - half_w)
+        spawn_pos = (random_x, -surf.get_height())
+
+        self.enemy_group.add(cls(spawn_pos, surf))
 
     # ------------------------------------------------------------------
     # Collisions
     # ------------------------------------------------------------------
     def check_collisions(self):
-        # Laser vs enemy — count points for each enemy destroyed
-        collisions = pygame.sprite.groupcollide(
-            self.laser_group, self.enemy_group, True, True
+        # --- Player laser vs enemies ------------------------------------
+        hits = pygame.sprite.groupcollide(
+            self.laser_group, self.enemy_group, True, False
         )
-        if collisions:
-            enemies_destroyed = sum(len(v) for v in collisions.values())
-            self.score += enemies_destroyed * stn.POINTS_PER_ENEMY
+        for _laser, enemies_hit in hits.items():
+            for enemy in enemies_hit:
+                if enemy.hit(1):
+                    self.score += enemy.POINTS
+                    enemy.kill()
 
-        # Player vs enemy — take damage per enemy hit
+        # --- Enemy laser vs player --------------------------------------
+        if self.player_group.sprite:
+            player_laser_hits = pygame.sprite.spritecollide(
+                self.player_group.sprite, self.enemy_laser_group, True
+            )
+            if player_laser_hits:
+                self._damage_player(len(player_laser_hits))
+
+        # --- Enemy body vs player ---------------------------------------
         if self.player_group.sprite:
             player_hits = pygame.sprite.spritecollide(
                 self.player_group.sprite, self.enemy_group, True
             )
             if player_hits:
-                dead = self.player_group.sprite.take_damage(len(player_hits))
-                if dead:
-                    self.game_over = True
-                    self.paused = False
-                    self.player_group.empty()  # remove the ship visually
+                self._damage_player(len(player_hits))
+
+
+    def _damage_player(self, amount):
+        dead = self.player_group.sprite.take_damage(amount)
+        if dead:
+            self.game_over = True
+            self.paused = False
+            self.player_group.empty()
 
     # ------------------------------------------------------------------
     # Update
@@ -121,7 +160,7 @@ class Game:
         if self.paused or self.game_over:
             return
 
-        self.starfield.update(dt) 
+        self.starfield.update(dt)
 
         if self.player_group.sprite:
             shot_fired = self.player_group.sprite.update(dt)
@@ -129,8 +168,10 @@ class Game:
                 laser_pos = self.player_group.sprite.rect.midtop
                 self.laser_group.add(Laser(laser_pos))
 
+        player = self.player_group.sprite
         self.laser_group.update(dt)
-        self.enemy_group.update(dt)
+        self.enemy_group.update(dt, player, self.enemy_laser_group)   # <-- NEW
+        self.enemy_laser_group.update(dt)                             # <-- NEW
         self.check_collisions()
 
     # ------------------------------------------------------------------
@@ -189,6 +230,7 @@ class Game:
         self.player_group.draw(self.screen)
         self.laser_group.draw(self.screen)
         self.enemy_group.draw(self.screen)
+        self.enemy_laser_group.draw(self.screen)
 
         self.draw_ui()
 
@@ -198,7 +240,7 @@ class Game:
         if self.game_over:
             self.draw_overlay(
                 "GAME OVER",
-                f"Score: {self.score}   |   Press R or Enter to restart   |   Esc to quit",
+                f"Score: {self.score}   |   Press R or Enter to restart",
                 stn.COLOR_UI_BAD
             )
 
