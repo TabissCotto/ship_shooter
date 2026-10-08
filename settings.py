@@ -11,6 +11,7 @@ FPS = 60
 COLOR_BG = (15, 15, 25)  
 
 TOGGLE_FULLSCREEN_KEY = pygame.K_F11
+EXIT_KEY = pygame.K_ESCAPE
 
 #-----------------------------------------------------PLAYER
 PLAYER_SPEED = 500.0  

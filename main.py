@@ -24,8 +24,9 @@ class Game:
 
         self.screen = pygame.display.set_mode(
             (stn.SCREEN_WIDTH, stn.SCREEN_HEIGHT),
-            pygame.RESIZABLE
+            pygame.FULLSCREEN | pygame.SCALED
         )
+
         pygame.display.set_caption(stn.CAPTION)
 
         self.clock = pygame.time.Clock()
@@ -86,11 +87,10 @@ class Game:
             if event.type == pygame.QUIT:
                 self.is_running = False
 
-            elif event.type == pygame.VIDEORESIZE:
-                self.screen = pygame.display.set_mode(event.size, pygame.RESIZABLE)
-                self.starfield.resize(event.w, event.h)  # <--- RESIZE STARFIELD BOUNDS
-
             elif event.type == pygame.KEYDOWN:
+                if event.key == stn.EXIT_KEY:
+                    self.is_running = False
+
                 if event.key == stn.PAUSE_KEY and not self.game_over:
                     self.paused = not self.paused
 
@@ -202,7 +202,7 @@ class Game:
             pygame.draw.rect(self.screen, stn.COLOR_UI_TEXT, rect, 2, border_radius=5)
 
         # Optional hint
-        hint = self.font.render("Tab: Pause", True, (140, 140, 150))
+        hint = self.font.render("Auto-fire | Tab: Pause", True, (140, 140, 150))
         self.screen.blit(
             hint,
             (stn.UI_PADDING, self.screen.get_height() - stn.UI_PADDING - hint.get_height())

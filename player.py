@@ -38,9 +38,7 @@ class Player(pygame.sprite.Sprite):
         if direction.magnitude() > 0:
             direction = direction.normalize()
 
-        wants_to_shoot = keys[pygame.K_SPACE]
-
-        return direction, wants_to_shoot
+        return direction      
 
     def update_cooldown(self, dt):
         if not self.can_shoot:
@@ -54,7 +52,7 @@ class Player(pygame.sprite.Sprite):
         return self.health <= 0   # True if dead
 
     def update(self, dt):
-        direction, wants_to_shoot = self.get_input()
+        direction = self.get_input()                  # <-- single value now
 
         self.update_acceleration(direction.x != 0, dt)
 
@@ -70,12 +68,13 @@ class Player(pygame.sprite.Sprite):
 
         self.update_cooldown(dt)
 
-        shot_fired = wants_to_shoot and self.can_shoot
+        # Fire whenever the weapon is off cooldown
+        shot_fired = self.can_shoot
         if shot_fired:
             self.can_shoot = False
 
         return shot_fired
-
+    
     def update_acceleration(self, is_moving_x, dt):
         if is_moving_x:
             self.move_timer += dt
